@@ -76,15 +76,42 @@ window.addEventListener('load', function () {
     };
   }
 
-  testBtn.addEventListener('mousedown', function () {
-    var api = init();
+  function cancelEvent(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+  }
 
-    function onStop() {
-      testBtn.removeEventListener('mouseup', onStop);
+  function onStartEvent(func) {
+    function onStart(ev) {
+      cancelEvent(ev);
 
-      api.stop();
+      func(ev);
     }
 
-    testBtn.addEventListener('mouseup', onStop);
+    testBtn.addEventListener('mousedown', onStart);
+    testBtn.addEventListener('touchstart', onStart);
+    testBtn.addEventListener('pointerdown', onStart);
+  }
+
+  function onStopEventOnce(func) {
+    function onStopEvent(ev) {
+      testBtn.removeEventListener('mouseup', onStopEvent);
+      testBtn.removeEventListener('pointerup', onStopEvent);
+      testBtn.removeEventListener('touchend', onStopEvent);
+
+      func(ev);
+    }
+
+    testBtn.addEventListener('mouseup', onStopEvent);
+    testBtn.addEventListener('pointerup', onStopEvent);
+    testBtn.addEventListener('touchend', onStopEvent);
+  }
+
+  onStartEvent(function () {
+    var api = init();
+
+    onStopEventOnce(function onStop() {
+      api.stop();
+    });
   });
 });
