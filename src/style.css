@@ -5,7 +5,7 @@ html, body {
   text-align: center;
 }
 
-button {
+.recorder {
   font-size: 3em;
   margin: 20px;
 
@@ -21,4 +21,25 @@ button {
   max-width: 300px;
   max-height: 300px;
   border-radius: 300px;
+}
+
+.recorder.active {
+  background-color: #d64c4f;
+}
+
+.code {
+  font-family: monospace;
+
+  color: #ededed;
+  text-align: left;
+  padding: 10px 20px;
+}
+
+.code p {
+  margin: 0;
+  line-height: 1.1;
+}
+
+.code p.error {
+  color: #d64c4f;
 }

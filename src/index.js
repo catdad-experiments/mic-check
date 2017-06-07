@@ -57,9 +57,16 @@ window.addEventListener('load', function () {
 
         var blob = new window.Blob(chunks);
         var url = window.URL.createObjectURL(blob);
-        player.src = url;
 
-        player.play();
+        // wait until we can play, so that there isn't an
+        // error thrown on mobile
+        player.oncanplay = function () {
+          player.oncanplay = undefined;
+
+          player.play();
+        };
+
+        player.src = url;
       });
 
       recorder.start();
@@ -92,23 +99,13 @@ window.addEventListener('load', function () {
     ev.preventDefault();
   }
 
-  function onStartEvent(func) {
-    function onStart(ev) {
-      cancelEvent(ev);
-
-      func(ev);
-    }
-
-    testBtn.addEventListener('mousedown', onStart);
-    testBtn.addEventListener('touchstart', onStart);
-    testBtn.addEventListener('pointerdown', onStart);
-  }
-
-  function onStopEventOnce(func) {
+  function onStopEvent(func, once) {
     function onStopEvent(ev) {
-      testBtn.removeEventListener('mouseup', onStopEvent);
-      testBtn.removeEventListener('pointerup', onStopEvent);
-      testBtn.removeEventListener('touchend', onStopEvent);
+      if (once) {
+        testBtn.removeEventListener('mouseup', onStopEvent);
+        testBtn.removeEventListener('pointerup', onStopEvent);
+        testBtn.removeEventListener('touchend', onStopEvent);
+      }
 
       func(ev);
     }
@@ -118,11 +115,45 @@ window.addEventListener('load', function () {
     testBtn.addEventListener('touchend', onStopEvent);
   }
 
-  onStartEvent(function () {
+  function onStartEvent(func) {
+    var started = false;
+
+    function onStart(ev) {
+      console.log(ev.type, started);
+
+      cancelEvent(ev);
+
+      if (started) {
+        return;
+      }
+
+      started = true;
+
+      func(ev);
+    }
+
+    onStopEvent(function () {
+      started = false;
+    }, false);
+
+    testBtn.addEventListener('mousedown', onStart);
+    testBtn.addEventListener('touchstart', onStart);
+    testBtn.addEventListener('pointerdown', onStart);
+  }
+
+  onStartEvent(function (ev) {
+    console.log('start');
+
+    testBtn.classList.add('active');
+
     var api = init();
 
-    onStopEventOnce(function onStop() {
+    onStopEvent(function onStop() {
+      console.log('end');
+
+      testBtn.classList.remove('active');
+
       api.stop();
-    });
+    }, true);
   });
 });
