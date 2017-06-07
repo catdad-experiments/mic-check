@@ -1,7 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: #CF7AE2;
+  background: #24292e;
   text-align: center;
 }
 
@@ -9,8 +9,8 @@ button {
   font-size: 3em;
   margin: 20px;
 
-  color: #333;
-  background-color: #C1E279;
+  color: #24292e;
+  background-color: #abd64d;
   outline: none;
   border: none;
 
