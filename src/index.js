@@ -1,7 +1,18 @@
 /* jshint browser: true, devel: true */
 
 window.addEventListener('load', function () {
-  console.log('page has loaded');
+  var requiredGlobals = ['MediaRecorder', 'URL', 'Blob'];
+  var missing = requiredGlobals.filter(function (name) {
+    return !window[name];
+  });
+
+  if (missing.length) {
+    alert(
+      'The following APIs are missing in your browser,' +
+      ' so this app is not supported:\n\n' +
+      missing.toString()
+    );
+  }
 
   var player = document.querySelector('#player');
   var testBtn = document.querySelector('#test');
@@ -23,7 +34,7 @@ window.addEventListener('load', function () {
     }
 
     function record(stream) {
-      var recorder = new MediaRecorder(stream);
+      var recorder = new window.MediaRecorder(stream);
 
       recorder.addEventListener('dataavailable', function (ev) {
         if (ev.data.size > 0) {
