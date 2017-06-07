@@ -12,4 +12,5 @@ bs.init({
   }
 });
 
-bs.watch('*.(html|js|css)').on('change', bs.reload);
+bs.watch('*.html').on('change', bs.reload);
+bs.watch('src/**').on('change', bs.reload);
