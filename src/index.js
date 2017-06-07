@@ -99,11 +99,13 @@ window.addEventListener('load', function () {
     ev.preventDefault();
   }
 
-  function onStopEventOnce(func) {
+  function onStopEvent(func, once) {
     function onStopEvent(ev) {
-      testBtn.removeEventListener('mouseup', onStopEvent);
-      testBtn.removeEventListener('pointerup', onStopEvent);
-      testBtn.removeEventListener('touchend', onStopEvent);
+      if (once) {
+        testBtn.removeEventListener('mouseup', onStopEvent);
+        testBtn.removeEventListener('pointerup', onStopEvent);
+        testBtn.removeEventListener('touchend', onStopEvent);
+      }
 
       func(ev);
     }
@@ -117,6 +119,8 @@ window.addEventListener('load', function () {
     var started = false;
 
     function onStart(ev) {
+      console.log(ev.type, started);
+
       cancelEvent(ev);
 
       if (started) {
@@ -128,9 +132,9 @@ window.addEventListener('load', function () {
       func(ev);
     }
 
-    onStopEventOnce(function () {
+    onStopEvent(function () {
       started = false;
-    });
+    }, false);
 
     testBtn.addEventListener('mousedown', onStart);
     testBtn.addEventListener('touchstart', onStart);
@@ -138,14 +142,18 @@ window.addEventListener('load', function () {
   }
 
   onStartEvent(function (ev) {
+    console.log('start');
+
     testBtn.classList.add('active');
 
     var api = init();
 
-    onStopEventOnce(function onStop() {
+    onStopEvent(function onStop() {
+      console.log('end');
+
       testBtn.classList.remove('active');
 
       api.stop();
-    });
+    }, true);
   });
 });
