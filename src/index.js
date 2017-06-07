@@ -32,6 +32,11 @@ window.addEventListener('load', function () {
       });
 
       recorder.addEventListener('stop', function () {
+        // stop all the media streams
+        stream.getTracks().forEach(function (track) {
+          track.stop();
+        });
+
         if (!chunks.length) {
           // TODO handle this error better
           console.error('nothing was recorded');
