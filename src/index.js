@@ -16,36 +16,35 @@ window.addEventListener('load', function () {
     var globalRecorder;
 
     function stop () {
-      console.log('stop called');
-      console.log(!!globalRecorder, chunks.length);
-
       if (globalRecorder) {
         globalRecorder.stop();
         globalRecorder = undefined;
       }
-
-      if (chunks.length) {
-        var blob = new window.Blob(chunks);
-        var url = window.URL.createObjectURL(blob);
-        player.src = url;
-
-        player.play();
-      }
     }
 
     function record(stream) {
-      console.log('we will be recording now');
-
       var recorder = new MediaRecorder(stream);
 
       recorder.addEventListener('dataavailable', function (ev) {
-        console.log('read data', ev.data.size);
         if (ev.data.size > 0) {
           chunks.push(ev.data);
         }
       });
 
-      console.log('calling start recorder');
+      recorder.addEventListener('stop', function () {
+        if (!chunks.length) {
+          // TODO handle this error better
+          console.error('nothing was recorded');
+
+          return;
+        }
+
+        var blob = new window.Blob(chunks);
+        var url = window.URL.createObjectURL(blob);
+        player.src = url;
+
+        player.play();
+      });
 
       recorder.start();
 
@@ -53,13 +52,18 @@ window.addEventListener('load', function () {
     }
 
     function onMicPermission(stream) {
-      globalRecorder = record(stream);
+      try {
+        globalRecorder = record(stream);
+      } catch (e) {
+        // TODO remove this
+        console.error(e);
+      }
     }
 
     // TODO fall back to navigator.getUserMedia is necessary
     // use something like this: https://github.com/webrtc/adapter
     navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      .then(record)
+      .then(onMicPermission)
       .catch(permissionError);
 
     return {
