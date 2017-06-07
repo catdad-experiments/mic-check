@@ -99,18 +99,6 @@ window.addEventListener('load', function () {
     ev.preventDefault();
   }
 
-  function onStartEvent(func) {
-    function onStart(ev) {
-      cancelEvent(ev);
-
-      func(ev);
-    }
-
-    testBtn.addEventListener('mousedown', onStart);
-    testBtn.addEventListener('touchstart', onStart);
-    testBtn.addEventListener('pointerdown', onStart);
-  }
-
   function onStopEventOnce(func) {
     function onStopEvent(ev) {
       testBtn.removeEventListener('mouseup', onStopEvent);
@@ -123,6 +111,30 @@ window.addEventListener('load', function () {
     testBtn.addEventListener('mouseup', onStopEvent);
     testBtn.addEventListener('pointerup', onStopEvent);
     testBtn.addEventListener('touchend', onStopEvent);
+  }
+
+  function onStartEvent(func) {
+    var started = false;
+
+    function onStart(ev) {
+      cancelEvent(ev);
+
+      if (started) {
+        return;
+      }
+
+      started = true;
+
+      func(ev);
+    }
+
+    onStopEventOnce(function () {
+      started = false;
+    });
+
+    testBtn.addEventListener('mousedown', onStart);
+    testBtn.addEventListener('touchstart', onStart);
+    testBtn.addEventListener('pointerdown', onStart);
   }
 
   onStartEvent(function (ev) {
