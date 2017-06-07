@@ -57,9 +57,16 @@ window.addEventListener('load', function () {
 
         var blob = new window.Blob(chunks);
         var url = window.URL.createObjectURL(blob);
-        player.src = url;
 
-        player.play();
+        // wait until we can play, so that there isn't an
+        // error thrown on mobile
+        player.oncanplay = function () {
+          player.oncanplay = undefined;
+
+          player.play();
+        };
+
+        player.src = url;
       });
 
       recorder.start();
