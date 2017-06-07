@@ -118,10 +118,14 @@ window.addEventListener('load', function () {
     testBtn.addEventListener('touchend', onStopEvent);
   }
 
-  onStartEvent(function () {
+  onStartEvent(function (ev) {
+    testBtn.classList.add('active');
+
     var api = init();
 
     onStopEventOnce(function onStop() {
+      testBtn.classList.remove('active');
+
       api.stop();
     });
   });
