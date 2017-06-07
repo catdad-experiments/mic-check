@@ -1,8 +1,6 @@
 /* jshint browser: true, devel: true */
 
 window.addEventListener('load', function () {
-  console.log('page has loaded');
-
   var requiredGlobals = ['MediaRecorder', 'URL', 'Blob'];
   var missing = requiredGlobals.filter(function (name) {
     return !window[name];
