@@ -26,3 +26,20 @@ html, body {
 .recorder.active {
   background-color: #d64c4f;
 }
+
+.code {
+  font-family: monospace;
+
+  color: #ededed;
+  text-align: left;
+  padding: 10px 20px;
+}
+
+.code p {
+  margin: 0;
+  line-height: 1.1;
+}
+
+.code p.error {
+  color: #d64c4f;
+}
