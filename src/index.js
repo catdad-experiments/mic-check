@@ -14,100 +14,121 @@ window.addEventListener('load', function () {
     );
   }
 
-  var context = new window.AudioContext();
   var testBtn = document.querySelector('#test');
+  var permissionPrompt = document.querySelector('#permission-prompt');
+  var permissionDeniedPrompt = document.querySelector('#permission-denied-prompt');
+  var usagePrompt = document.querySelector('#usage-prompt');
+  var context = new window.AudioContext();
 
-  function permissionError(err) {
-    // TODO don't alert
+  function closeUserMedia(mediaStream) {
+    mediaStream.getTracks().forEach(function (track) {
+      track.stop();
+    });
+  }
+
+  function onPermissionError(err) {
+    // TODO this probably means we had permission once
+    // but it was now revoked... we should ask for
+    // permission again
     console.error(err);
   }
 
-  function chunksToArrayBuffer(chunks, done) {
-    var combined = new window.Blob(chunks);
-    var reader = new window.FileReader();
-
-    reader.addEventListener('loadend', function () {
-      done(null, this.result);
-    });
-
-    reader.readAsArrayBuffer(combined);
+  function getMedia(done) {
+    // TODO fall back to navigator.getUserMedia is necessary
+    // use something like this: https://github.com/webrtc/adapter
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(function (stream) {
+        done(null, stream);
+      })
+      .catch(done);
   }
 
-  function init () {
-    var chunks = [];
-    var globalRecorder;
+  var recordAndPlay = (function () {
+    function chunksToArrayBuffer(chunks, done) {
+      var combined = new window.Blob(chunks);
+      var reader = new window.FileReader();
 
-    function stop () {
-      if (globalRecorder) {
-        globalRecorder.stop();
-        globalRecorder = undefined;
-      }
-    }
-
-    function record(stream) {
-      var recorder = new window.MediaRecorder(stream);
-
-      recorder.addEventListener('dataavailable', function (ev) {
-        if (ev.data.size > 0) {
-          chunks.push(ev.data);
-        }
+      reader.addEventListener('loadend', function () {
+        done(null, this.result);
       });
 
-      recorder.addEventListener('stop', function () {
-        // stop all the media streams
-        stream.getTracks().forEach(function (track) {
-          track.stop();
+      reader.readAsArrayBuffer(combined);
+    }
+
+    function init () {
+      var chunks = [];
+      var globalRecorder;
+
+      function stop () {
+        if (globalRecorder) {
+          globalRecorder.stop();
+          globalRecorder = undefined;
+        }
+      }
+
+      function record(stream) {
+        var recorder = new window.MediaRecorder(stream);
+
+        recorder.addEventListener('dataavailable', function (ev) {
+          if (ev.data.size > 0) {
+            chunks.push(ev.data);
+          }
         });
 
-        if (!chunks.length) {
-          // TODO handle this error better
-          console.error('nothing was recorded');
+        recorder.addEventListener('stop', function () {
+          // stop all the media streams
+          closeUserMedia(stream);
 
-          return;
-        }
-
-        chunksToArrayBuffer(chunks, function (err, buffer) {
-          if (err) {
-            console.error(err);
+          if (!chunks.length) {
+            // TODO handle this error better
+            console.error('nothing was recorded');
 
             return;
           }
 
-          context.decodeAudioData(buffer, function (audioBuffer) {
-            console.log('playing in audio context');
+          chunksToArrayBuffer(chunks, function (err, buffer) {
+            if (err) {
+              console.error(err);
 
-            var source = context.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(context.destination);
-            source.start(0);
+              return;
+            }
+
+            context.decodeAudioData(buffer, function (audioBuffer) {
+              console.log('playing in audio context');
+
+              var source = context.createBufferSource();
+              source.buffer = audioBuffer;
+              source.connect(context.destination);
+              source.start(0);
+            });
           });
         });
+
+        recorder.start();
+
+        return recorder;
+      }
+
+      getMedia(function (err, stream) {
+        if (err) {
+          return onPermissionError(err);
+        }
+
+        try {
+          globalRecorder = record(stream);
+        } catch (e) {
+          // TODO remove this
+          console.error(e);
+        }
       });
 
-      recorder.start();
-
-      return recorder;
+      return {
+        stop: stop
+      };
     }
 
-    function onMicPermission(stream) {
-      try {
-        globalRecorder = record(stream);
-      } catch (e) {
-        // TODO remove this
-        console.error(e);
-      }
-    }
-
-    // TODO fall back to navigator.getUserMedia is necessary
-    // use something like this: https://github.com/webrtc/adapter
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      .then(onMicPermission)
-      .catch(permissionError);
-
-    return {
-      stop: stop
-    };
-  }
+    return init;
+  }());
 
   function cancelEvent(ev) {
     ev.stopPropagation();
@@ -161,7 +182,7 @@ window.addEventListener('load', function () {
 
     testBtn.classList.add('active');
 
-    var api = init();
+    var api = recordAndPlay();
 
     onStopEvent(function onStop() {
       console.log('end');
@@ -170,5 +191,22 @@ window.addEventListener('load', function () {
 
       api.stop();
     }, true);
+  });
+
+  // prompt the user for media immediately, then initialize
+  // the app in the correct state
+  getMedia(function (err, stream) {
+    permissionPrompt.classList.add('hide');
+
+    if (err) {
+      permissionDeniedPrompt.classList.remove('hide');
+
+      return;
+    }
+
+    closeUserMedia(stream);
+
+    usagePrompt.classList.remove('hide');
+    testBtn.classList.remove('hide');
   });
 });
