@@ -14,100 +14,109 @@ window.addEventListener('load', function () {
     );
   }
 
-  var context = new window.AudioContext();
   var testBtn = document.querySelector('#test');
+  var context = new window.AudioContext();
+
+  function closeUserMedia(mediaStream) {
+    mediaStream.getTracks().forEach(function (track) {
+      track.stop();
+    });
+  }
 
   function permissionError(err) {
     // TODO don't alert
     console.error(err);
   }
 
-  function chunksToArrayBuffer(chunks, done) {
-    var combined = new window.Blob(chunks);
-    var reader = new window.FileReader();
+  var recordAndPlay = (function () {
+    function chunksToArrayBuffer(chunks, done) {
+      var combined = new window.Blob(chunks);
+      var reader = new window.FileReader();
 
-    reader.addEventListener('loadend', function () {
-      done(null, this.result);
-    });
-
-    reader.readAsArrayBuffer(combined);
-  }
-
-  function init () {
-    var chunks = [];
-    var globalRecorder;
-
-    function stop () {
-      if (globalRecorder) {
-        globalRecorder.stop();
-        globalRecorder = undefined;
-      }
-    }
-
-    function record(stream) {
-      var recorder = new window.MediaRecorder(stream);
-
-      recorder.addEventListener('dataavailable', function (ev) {
-        if (ev.data.size > 0) {
-          chunks.push(ev.data);
-        }
+      reader.addEventListener('loadend', function () {
+        done(null, this.result);
       });
 
-      recorder.addEventListener('stop', function () {
-        // stop all the media streams
-        stream.getTracks().forEach(function (track) {
-          track.stop();
+      reader.readAsArrayBuffer(combined);
+    }
+
+    function init () {
+      var chunks = [];
+      var globalRecorder;
+
+      function stop () {
+        if (globalRecorder) {
+          globalRecorder.stop();
+          globalRecorder = undefined;
+        }
+      }
+
+      function record(stream) {
+        var recorder = new window.MediaRecorder(stream);
+
+        recorder.addEventListener('dataavailable', function (ev) {
+          if (ev.data.size > 0) {
+            chunks.push(ev.data);
+          }
         });
 
-        if (!chunks.length) {
-          // TODO handle this error better
-          console.error('nothing was recorded');
+        recorder.addEventListener('stop', function () {
+          // stop all the media streams
+          closeUserMedia(stream);
 
-          return;
-        }
-
-        chunksToArrayBuffer(chunks, function (err, buffer) {
-          if (err) {
-            console.error(err);
+          if (!chunks.length) {
+            // TODO handle this error better
+            console.error('nothing was recorded');
 
             return;
           }
 
-          context.decodeAudioData(buffer, function (audioBuffer) {
-            console.log('playing in audio context');
+          chunksToArrayBuffer(chunks, function (err, buffer) {
+            if (err) {
+              console.error(err);
 
-            var source = context.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(context.destination);
-            source.start(0);
+              return;
+            }
+
+            context.decodeAudioData(buffer, function (audioBuffer) {
+              console.log('playing in audio context');
+
+              var source = context.createBufferSource();
+              source.buffer = audioBuffer;
+              source.connect(context.destination);
+              source.start(0);
+            });
           });
         });
-      });
 
-      recorder.start();
+        recorder.start();
 
-      return recorder;
-    }
-
-    function onMicPermission(stream) {
-      try {
-        globalRecorder = record(stream);
-      } catch (e) {
-        // TODO remove this
-        console.error(e);
+        return recorder;
       }
+
+      function onMicPermission(stream) {
+        try {
+          globalRecorder = record(stream);
+        } catch (e) {
+          // TODO remove this
+          console.error(e);
+        }
+      }
+
+      // TODO fall back to navigator.getUserMedia is necessary
+      // use something like this: https://github.com/webrtc/adapter
+      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        .then(onMicPermission)
+        .catch(permissionError);
+
+      return {
+        stop: stop
+      };
     }
 
-    // TODO fall back to navigator.getUserMedia is necessary
-    // use something like this: https://github.com/webrtc/adapter
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      .then(onMicPermission)
-      .catch(permissionError);
+    return init;
+  }());
 
-    return {
-      stop: stop
-    };
-  }
 
   function cancelEvent(ev) {
     ev.stopPropagation();
@@ -161,7 +170,7 @@ window.addEventListener('load', function () {
 
     testBtn.classList.add('active');
 
-    var api = init();
+    var api = recordAndPlay();
 
     onStopEvent(function onStop() {
       console.log('end');
