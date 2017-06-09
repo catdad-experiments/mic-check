@@ -7,29 +7,31 @@ html, body {
   color: #ededed;
   line-height: 1.2;
 
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
-  margin: 20px 0;
-
   display: flex;
   flex-direction: column;
 }
 
 header {
   flex-grow: 0;
+  padding: 20px;
 }
 
 footer {
   flex-grow: 0;
   text-align: center;
+  padding: 6px;
+
+  background: rgba(255,255,255,0.1);
 }
 
 .container {
   flex-grow: 100;
-
   text-align: center;
+  overflow: auto;
 }
 
 a {
@@ -46,10 +48,6 @@ a {
   font-family: monospace;
   font-weight: bold;
   font-size: 1.3em;
-}
-
-.text {
-  margin: 5px 20px;
 }
 
 .recorder {
@@ -76,6 +74,7 @@ a {
 
 .code {
   font-family: monospace;
+  text-align: left;
   padding: 10px 20px;
 }
 
