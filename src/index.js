@@ -1,7 +1,7 @@
 /* jshint browser: true, devel: true */
 
 window.addEventListener('load', function () {
-  var requiredGlobals = ['MediaRecorder', 'URL', 'Blob'];
+  var requiredGlobals = ['MediaRecorder', 'URL', 'Blob', 'AudioContext', 'FileReader'];
   var missing = requiredGlobals.filter(function (name) {
     return !window[name];
   });
@@ -14,12 +14,23 @@ window.addEventListener('load', function () {
     );
   }
 
-  var player = document.querySelector('#player');
+  var context = new window.AudioContext();
   var testBtn = document.querySelector('#test');
 
   function permissionError(err) {
     // TODO don't alert
     console.error(err);
+  }
+
+  function chunksToArrayBuffer(chunks, done) {
+    var combined = new window.Blob(chunks);
+    var reader = new window.FileReader();
+
+    reader.addEventListener('loadend', function () {
+      done(null, this.result);
+    });
+
+    reader.readAsArrayBuffer(combined);
   }
 
   function init () {
@@ -55,18 +66,22 @@ window.addEventListener('load', function () {
           return;
         }
 
-        var blob = new window.Blob(chunks);
-        var url = window.URL.createObjectURL(blob);
+        chunksToArrayBuffer(chunks, function (err, buffer) {
+          if (err) {
+            console.error(err);
 
-        // wait until we can play, so that there isn't an
-        // error thrown on mobile
-        player.oncanplay = function () {
-          player.oncanplay = undefined;
+            return;
+          }
 
-          player.play();
-        };
+          context.decodeAudioData(buffer, function (audioBuffer) {
+            console.log('playing in audio context');
 
-        player.src = url;
+            var source = context.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(context.destination);
+            source.start(0);
+          });
+        });
       });
 
       recorder.start();
