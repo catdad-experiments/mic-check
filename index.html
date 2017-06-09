@@ -10,14 +10,17 @@
   <link rel="stylesheet" type="text/css" href="src/style.css">
 </head>
 <body>
-  <div id="permission-ask" class="text hide">
+  <div id="permission-prompt" class="text">
     Please allow access to the microphone. After all, we'll need to use it in order to test it.
   </div>
-  <div id="instructions" class="text hide">
+  <div id="permission-denied-prompt" class="text hide">
+    Seems you did not allow access to the microphone, so we will not be able to test it.
+  </div>
+  <div id="usage-prompt" class="text hide">
     Hold the "record" button and talk. We will play back the audio when you let go of the button.
   </div>
 
-  <button id="test" class="recorder">record</button>
+  <button id="test" class="recorder hide">record</button>
 
   <div id="console" class="code"></div>
 

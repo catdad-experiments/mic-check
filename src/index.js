@@ -15,6 +15,9 @@ window.addEventListener('load', function () {
   }
 
   var testBtn = document.querySelector('#test');
+  var permissionPrompt = document.querySelector('#permission-prompt');
+  var permissionDeniedPrompt = document.querySelector('#permission-denied-prompt');
+  var usagePrompt = document.querySelector('#usage-prompt');
   var context = new window.AudioContext();
 
   function closeUserMedia(mediaStream) {
@@ -188,5 +191,22 @@ window.addEventListener('load', function () {
 
       api.stop();
     }, true);
+  });
+
+  // prompt the user for media immediately, then initialize
+  // the app in the correct state
+  getMedia(function (err, stream) {
+    permissionPrompt.classList.add('hide');
+
+    if (err) {
+      permissionDeniedPrompt.classList.remove('hide');
+
+      return;
+    }
+
+    closeUserMedia(stream);
+
+    usagePrompt.classList.remove('hide');
+    testBtn.classList.remove('hide');
   });
 });
