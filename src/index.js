@@ -23,9 +23,21 @@ window.addEventListener('load', function () {
     });
   }
 
-  function permissionError(err) {
-    // TODO don't alert
+  function onPermissionError(err) {
+    // TODO this probably means we had permission once
+    // but it was now revoked... we should ask for
+    // permission again
     console.error(err);
+  }
+
+  function getMedia(done) {
+    // TODO fall back to navigator.getUserMedia is necessary
+    // use something like this: https://github.com/webrtc/adapter
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(function (stream) {
+        done(null, stream);
+      })
+      .catch(done);
   }
 
   var recordAndPlay = (function () {
@@ -94,20 +106,18 @@ window.addEventListener('load', function () {
         return recorder;
       }
 
-      function onMicPermission(stream) {
+      getMedia(function (err, stream) {
+        if (err) {
+          return onPermissionError(err);
+        }
+
         try {
           globalRecorder = record(stream);
         } catch (e) {
           // TODO remove this
           console.error(e);
         }
-      }
-
-      // TODO fall back to navigator.getUserMedia is necessary
-      // use something like this: https://github.com/webrtc/adapter
-      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-        .then(onMicPermission)
-        .catch(permissionError);
+      });
 
       return {
         stop: stop
@@ -116,7 +126,6 @@ window.addEventListener('load', function () {
 
     return init;
   }());
-
 
   function cancelEvent(ev) {
     ev.stopPropagation();
