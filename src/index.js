@@ -15,7 +15,6 @@ window.addEventListener('load', function () {
   }
 
   var context = new window.AudioContext();
-  var player = document.querySelector('#player');
   var testBtn = document.querySelector('#test');
 
   function permissionError(err) {
