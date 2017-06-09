@@ -4,7 +4,7 @@ html, body {
   background: #24292e;
 
   font-family: sans-serif;
-  color: #ededed;
+  color: #e5e5e5;
   line-height: 1.2;
 
   height: 100%;
@@ -36,7 +36,7 @@ footer {
 
 a {
   text-decoration: none;
-  color: #ededed;
+  color: #e5e5e5;
   font-weight: bold;
 }
 
