@@ -29,6 +29,7 @@ footer {
 }
 
 .container {
+  position: relative;
   flex-grow: 100;
 }
 
@@ -55,8 +56,12 @@ a {
 }
 
 .recorder {
-  display: block;
-  margin: 20px auto;
+  position: absolute;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 
   color: #24292e;
   background-color: #abd64d;
