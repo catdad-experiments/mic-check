@@ -49,6 +49,7 @@ window.addEventListener('load', function () {
   var context = new window.AudioContext();
 
   function closeUserMedia(mediaStream) {
+    // stop all the media streams
     mediaStream.getTracks().forEach(function (track) {
       track.stop();
     });
@@ -77,8 +78,26 @@ window.addEventListener('load', function () {
     }
 
     function init () {
-      var chunks = [];
       var globalRecorder;
+
+      function playback(chunks) {
+        chunksToArrayBuffer(chunks, function (err, buffer) {
+          if (err) {
+            console.error(err);
+
+            return;
+          }
+
+          context.decodeAudioData(buffer, function (audioBuffer) {
+            console.log('playing in audio context');
+
+            var source = context.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(context.destination);
+            source.start(0);
+          });
+        });
+      }
 
       function stop () {
         if (globalRecorder) {
@@ -88,6 +107,7 @@ window.addEventListener('load', function () {
       }
 
       function record(stream) {
+        var chunks = [];
         var recorder = new window.MediaRecorder(stream);
 
         recorder.addEventListener('dataavailable', function (ev) {
@@ -97,32 +117,14 @@ window.addEventListener('load', function () {
         });
 
         recorder.addEventListener('stop', function () {
-          // stop all the media streams
           closeUserMedia(stream);
 
-          if (!chunks.length) {
-            // TODO handle this error better
-            console.error('nothing was recorded');
-
-            return;
+          if (chunks.length) {
+            return playback(chunks);
           }
 
-          chunksToArrayBuffer(chunks, function (err, buffer) {
-            if (err) {
-              console.error(err);
-
-              return;
-            }
-
-            context.decodeAudioData(buffer, function (audioBuffer) {
-              console.log('playing in audio context');
-
-              var source = context.createBufferSource();
-              source.buffer = audioBuffer;
-              source.connect(context.destination);
-              source.start(0);
-            });
-          });
+          // TODO handle this error better
+          console.error('nothing was recorded');
         });
 
         recorder.start();
