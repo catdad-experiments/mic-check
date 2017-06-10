@@ -15,12 +15,7 @@ window.addEventListener('load', function () {
     usagePrompt.classList.add('hide');
   }
 
-  var requiredGlobals = ['MediaRecorder', 'URL', 'Blob', 'AudioContext', 'FileReader', 'Flapjacks'];
-  var missing = requiredGlobals.filter(function (name) {
-    return !window[name];
-  });
-
-  if (missing.length) {
+  function onMissingFeatures(missing) {
     hidePrompts();
 
     unsupportedPrompt.classList.remove('hide');
@@ -31,8 +26,24 @@ window.addEventListener('load', function () {
     );
 
     unsupportedPrompt.appendChild(p);
+  }
 
-    return;
+  function onPermissionError(err) {
+    // TODO this probably means we had permission once
+    // but it was now revoked... we should ask for
+    // permission again
+    console.error(err);
+  }
+
+  // detect missing features in the browser
+  var missingFeatures = [
+    'MediaRecorder', 'URL', 'Blob', 'AudioContext', 'FileReader'
+  ].filter(function (name) {
+    return !window[name];
+  });
+
+  if (missingFeatures.length) {
+    return onMissingFeatures(missingFeatures);
   }
 
   var context = new window.AudioContext();
@@ -41,13 +52,6 @@ window.addEventListener('load', function () {
     mediaStream.getTracks().forEach(function (track) {
       track.stop();
     });
-  }
-
-  function onPermissionError(err) {
-    // TODO this probably means we had permission once
-    // but it was now revoked... we should ask for
-    // permission again
-    console.error(err);
   }
 
   function getMedia(done) {
