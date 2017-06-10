@@ -69,15 +69,16 @@ svg.icon {
   fill: #e5e5e5;
 }
 
-.recorder {
+.recorder, .recorder svg {
   position: absolute;
   margin: auto;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+}
 
-  color: #24292e;
+.recorder {
   background-color: #abd64d;
   outline: none;
   border: none;
@@ -90,6 +91,12 @@ svg.icon {
   max-width: 250px;
   max-height: 250px;
   border-radius: 300px;
+}
+
+.recorder svg {
+  fill: #24292e;
+  width: 75%;
+  height: 75%;
 }
 
 .recorder.active {

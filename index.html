@@ -20,6 +20,11 @@
         <use xlink:href="#bracket" transform="translate(21, -21) rotate(-45 50 50)" width="40" height="40"></use>
         <use xlink:href="#bracket" transform="translate(-41, -21) rotate(135 50 50)" width="40" height="40"></use>
       </symbol>
+
+      <symbol id="mic" viewBox="0 0 100 100">
+        <!-- Created by Setyo Ari Wibowo from the Noun Project -->
+        <path d="M40 51V29c0-5.5 4.5-10 10-10s10 4.5 10 10v22c0 5.5-4.5 10-10 10S40 56.5 40 51zM68 51c0-1.1-0.9-2-2-2s-2 0.9-2 2c0 7.7-6.3 14-14 14s-14-6.3-14-14c0-1.1-0.9-2-2-2s-2 0.9-2 2c0 9.2 7 16.9 16 17.9V79h-7c-1.1 0-2 0.9-2 2s0.9 2 2 2h18c1.1 0 2-0.9 2-2s-0.9-2-2-2h-7V68.9C61 67.9 68 60.2 68 51z"/>
+      </symbol>
     </defs>
   </svg>
 
@@ -31,12 +36,14 @@
       Seems you did not allow access to the microphone, so we will not be able to test it.
     </div>
     <div id="usage-prompt" class="text hide">
-      Hold the "record" button and talk. We will play back the audio when you let go of the button.
+      Hold the microphone button and talk. We will play back the audio when you let go of the button.
     </div>
   </header>
 
   <div class="container">
-    <button id="test" class="recorder hide">record</button>
+    <button id="test" class="recorder hide">
+      <svg><use xlink:href="#mic"></use></svg>
+    </button>
     <div id="console" class="code limit"></div>
   </div>
 
