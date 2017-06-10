@@ -10,6 +10,19 @@
   <link rel="stylesheet" type="text/css" href="src/style.css">
 </head>
 <body>
+  <svg class="sprite" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="bracket" viewBox="0 0 40 40">
+        <path d="M0,0 L40,0 L 40,10 L10,10 L10,40 L0,40" />
+      </symbol>
+
+      <symbol id="code" viewBox="0 0 80 58">
+        <use xlink:href="#bracket" transform="translate(21, -21) rotate(-45 50 50)" width="40" height="40"></use>
+        <use xlink:href="#bracket" transform="translate(-41, -21) rotate(135 50 50)" width="40" height="40"></use>
+      </symbol>
+    </defs>
+  </svg>
+
   <header class="limit">
     <div id="permission-prompt" class="text">
       Please allow access to the microphone. After all, we'll need to use it in order to test it.
@@ -28,7 +41,11 @@
   </div>
 
   <footer>
-    <span class="monospace"><></span> with ❤ by <a href="https://github.com/catdad">catdad</a>
+    <span class="icon">
+      <svg class="icon"><use xlink:href="#code"></use></svg>
+    </span>
+    <span> with ❤ by </span>
+    <a href="https://github.com/catdad">catdad</a>
   </footer>
 
   <script src="src/console.js"></script>
