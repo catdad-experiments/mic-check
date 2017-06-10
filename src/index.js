@@ -148,11 +148,6 @@ window.addEventListener('load', function () {
     return init;
   }());
 
-  function cancelEvent(ev) {
-    ev.stopPropagation();
-    ev.preventDefault();
-  }
-
   function stopEventHandler(func, once) {
     function onStop(ev) {
       if (once) {
@@ -174,8 +169,6 @@ window.addEventListener('load', function () {
 
     function onStart(ev) {
       console.log(ev.type, started);
-
-      cancelEvent(ev);
 
       if (started) {
         return;
