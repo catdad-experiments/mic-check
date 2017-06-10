@@ -156,23 +156,23 @@ window.addEventListener('load', function () {
     ev.preventDefault();
   }
 
-  function onStopEvent(func, once) {
-    function onStopEvent(ev) {
+  function stopEventHandler(func, once) {
+    function onStop(ev) {
       if (once) {
-        testBtn.removeEventListener('mouseup', onStopEvent);
-        testBtn.removeEventListener('pointerup', onStopEvent);
-        testBtn.removeEventListener('touchend', onStopEvent);
+        testBtn.removeEventListener('mouseup', onStop);
+        testBtn.removeEventListener('pointerup', onStop);
+        testBtn.removeEventListener('touchend', onStop);
       }
 
       func(ev);
     }
 
-    testBtn.addEventListener('mouseup', onStopEvent);
-    testBtn.addEventListener('pointerup', onStopEvent);
-    testBtn.addEventListener('touchend', onStopEvent);
+    testBtn.addEventListener('mouseup', onStop);
+    testBtn.addEventListener('pointerup', onStop);
+    testBtn.addEventListener('touchend', onStop);
   }
 
-  function onStartEvent(func) {
+  function startEventHandler(func) {
     var started = false;
 
     function onStart(ev) {
@@ -189,7 +189,7 @@ window.addEventListener('load', function () {
       func(ev);
     }
 
-    onStopEvent(function () {
+    stopEventHandler(function () {
       started = false;
     }, false);
 
@@ -198,14 +198,14 @@ window.addEventListener('load', function () {
     testBtn.addEventListener('pointerdown', onStart);
   }
 
-  onStartEvent(function (ev) {
+  startEventHandler(function (ev) {
     console.log('start');
 
     testBtn.classList.add('active');
 
     var api = recordAndPlay();
 
-    onStopEvent(function onStop() {
+    stopEventHandler(function onStop() {
       console.log('end');
 
       testBtn.classList.remove('active');
