@@ -135,12 +135,7 @@ window.addEventListener('load', function () {
           return onPermissionError(err);
         }
 
-        try {
-          globalRecorder = record(stream);
-        } catch (e) {
-          // TODO remove this
-          console.error(e);
-        }
+        globalRecorder = record(stream);
       });
 
       return {
