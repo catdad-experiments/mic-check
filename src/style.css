@@ -103,16 +103,3 @@ svg.icon {
 .recorder.active {
   background-color: #d64c4f;
 }
-
-.code {
-  font-family: monospace;
-  padding: 10px 20px;
-}
-
-.code p {
-  margin: 0;
-}
-
-.code p.error {
-  color: #d64c4f;
-}
