@@ -1,29 +1,31 @@
 /* jshint browser: true, devel: true */
 
 window.addEventListener('load', function () {
-  var requiredGlobals = ['MediaRecorder', 'URL', 'Blob', 'AudioContext', 'FileReader'];
-  var missing = requiredGlobals.filter(function (name) {
-    return !window[name];
-  });
-
-  if (missing.length) {
-    alert(
-      'The following APIs are missing in your browser,' +
-      ' so this app is not supported:\n\n' +
-      missing.toString()
-    );
-  }
-
+  // get all the DOM nodes
   var testBtn = document.querySelector('#test');
   var permissionPrompt = document.querySelector('#permission-prompt');
   var permissionDeniedPrompt = document.querySelector('#permission-denied-prompt');
+  var unsupportedPrompt = document.querySelector('#unsupported-prompt');
   var usagePrompt = document.querySelector('#usage-prompt');
-  var context = new window.AudioContext();
 
-  function closeUserMedia(mediaStream) {
-    mediaStream.getTracks().forEach(function (track) {
-      track.stop();
-    });
+  function hidePrompts() {
+    permissionPrompt.classList.add('hide');
+    permissionDeniedPrompt.classList.add('hide');
+    unsupportedPrompt.classList.add('hide');
+    usagePrompt.classList.add('hide');
+  }
+
+  function onMissingFeatures(missing) {
+    hidePrompts();
+
+    unsupportedPrompt.classList.remove('hide');
+
+    var p = document.createElement('p');
+    p.appendChild(
+      document.createTextNode(missing.toString())
+    );
+
+    unsupportedPrompt.appendChild(p);
   }
 
   function onPermissionError(err) {
@@ -31,6 +33,25 @@ window.addEventListener('load', function () {
     // but it was now revoked... we should ask for
     // permission again
     console.error(err);
+  }
+
+  // detect missing features in the browser
+  var missingFeatures = [
+    'MediaRecorder', 'URL', 'Blob', 'AudioContext', 'FileReader'
+  ].filter(function (name) {
+    return !window[name];
+  });
+
+  if (missingFeatures.length) {
+    return onMissingFeatures(missingFeatures);
+  }
+
+  var context = new window.AudioContext();
+
+  function closeUserMedia(mediaStream) {
+    mediaStream.getTracks().forEach(function (track) {
+      track.stop();
+    });
   }
 
   function getMedia(done) {
@@ -196,7 +217,7 @@ window.addEventListener('load', function () {
   // prompt the user for media immediately, then initialize
   // the app in the correct state
   getMedia(function (err, stream) {
-    permissionPrompt.classList.add('hide');
+    hidePrompts();
 
     if (err) {
       permissionDeniedPrompt.classList.remove('hide');
