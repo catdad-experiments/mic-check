@@ -49,6 +49,7 @@ window.addEventListener('load', function () {
   var context = new window.AudioContext();
 
   function closeUserMedia(mediaStream) {
+    // stop all the media streams
     mediaStream.getTracks().forEach(function (track) {
       track.stop();
     });
@@ -77,8 +78,26 @@ window.addEventListener('load', function () {
     }
 
     function init () {
-      var chunks = [];
       var globalRecorder;
+
+      function playback(chunks) {
+        chunksToArrayBuffer(chunks, function (err, buffer) {
+          if (err) {
+            console.error(err);
+
+            return;
+          }
+
+          context.decodeAudioData(buffer, function (audioBuffer) {
+            console.log('playing in audio context');
+
+            var source = context.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(context.destination);
+            source.start(0);
+          });
+        });
+      }
 
       function stop () {
         if (globalRecorder) {
@@ -88,6 +107,7 @@ window.addEventListener('load', function () {
       }
 
       function record(stream) {
+        var chunks = [];
         var recorder = new window.MediaRecorder(stream);
 
         recorder.addEventListener('dataavailable', function (ev) {
@@ -97,32 +117,14 @@ window.addEventListener('load', function () {
         });
 
         recorder.addEventListener('stop', function () {
-          // stop all the media streams
           closeUserMedia(stream);
 
-          if (!chunks.length) {
-            // TODO handle this error better
-            console.error('nothing was recorded');
-
-            return;
+          if (chunks.length) {
+            return playback(chunks);
           }
 
-          chunksToArrayBuffer(chunks, function (err, buffer) {
-            if (err) {
-              console.error(err);
-
-              return;
-            }
-
-            context.decodeAudioData(buffer, function (audioBuffer) {
-              console.log('playing in audio context');
-
-              var source = context.createBufferSource();
-              source.buffer = audioBuffer;
-              source.connect(context.destination);
-              source.start(0);
-            });
-          });
+          // TODO handle this error better
+          console.error('nothing was recorded');
         });
 
         recorder.start();
@@ -135,12 +137,7 @@ window.addEventListener('load', function () {
           return onPermissionError(err);
         }
 
-        try {
-          globalRecorder = record(stream);
-        } catch (e) {
-          // TODO remove this
-          console.error(e);
-        }
+        globalRecorder = record(stream);
       });
 
       return {
@@ -151,34 +148,27 @@ window.addEventListener('load', function () {
     return init;
   }());
 
-  function cancelEvent(ev) {
-    ev.stopPropagation();
-    ev.preventDefault();
-  }
-
-  function onStopEvent(func, once) {
-    function onStopEvent(ev) {
+  function stopEventHandler(func, once) {
+    function onStop(ev) {
       if (once) {
-        testBtn.removeEventListener('mouseup', onStopEvent);
-        testBtn.removeEventListener('pointerup', onStopEvent);
-        testBtn.removeEventListener('touchend', onStopEvent);
+        testBtn.removeEventListener('mouseup', onStop);
+        testBtn.removeEventListener('pointerup', onStop);
+        testBtn.removeEventListener('touchend', onStop);
       }
 
       func(ev);
     }
 
-    testBtn.addEventListener('mouseup', onStopEvent);
-    testBtn.addEventListener('pointerup', onStopEvent);
-    testBtn.addEventListener('touchend', onStopEvent);
+    testBtn.addEventListener('mouseup', onStop);
+    testBtn.addEventListener('pointerup', onStop);
+    testBtn.addEventListener('touchend', onStop);
   }
 
-  function onStartEvent(func) {
+  function startEventHandler(func) {
     var started = false;
 
     function onStart(ev) {
       console.log(ev.type, started);
-
-      cancelEvent(ev);
 
       if (started) {
         return;
@@ -189,7 +179,7 @@ window.addEventListener('load', function () {
       func(ev);
     }
 
-    onStopEvent(function () {
+    stopEventHandler(function () {
       started = false;
     }, false);
 
@@ -198,14 +188,14 @@ window.addEventListener('load', function () {
     testBtn.addEventListener('pointerdown', onStart);
   }
 
-  onStartEvent(function (ev) {
+  startEventHandler(function (ev) {
     console.log('start');
 
     testBtn.classList.add('active');
 
     var api = recordAndPlay();
 
-    onStopEvent(function onStop() {
+    stopEventHandler(function onStop() {
       console.log('end');
 
       testBtn.classList.remove('active');
