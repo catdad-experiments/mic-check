@@ -69,7 +69,8 @@ svg.icon {
   fill: #e5e5e5;
 }
 
-.recorder, .recorder svg {
+.recorder,
+.recorder svg {
   position: absolute;
   margin: auto;
   top: 0;
