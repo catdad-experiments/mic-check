@@ -10,19 +10,26 @@
   <link rel="stylesheet" type="text/css" href="src/style.css">
 </head>
 <body>
-  <div id="permission-prompt" class="text">
-    Please allow access to the microphone. After all, we'll need to use it in order to test it.
-  </div>
-  <div id="permission-denied-prompt" class="text hide">
-    Seems you did not allow access to the microphone, so we will not be able to test it.
-  </div>
-  <div id="usage-prompt" class="text hide">
-    Hold the "record" button and talk. We will play back the audio when you let go of the button.
+  <header class="limit">
+    <div id="permission-prompt" class="text">
+      Please allow access to the microphone. After all, we'll need to use it in order to test it.
+    </div>
+    <div id="permission-denied-prompt" class="text hide">
+      Seems you did not allow access to the microphone, so we will not be able to test it.
+    </div>
+    <div id="usage-prompt" class="text hide">
+      Hold the "record" button and talk. We will play back the audio when you let go of the button.
+    </div>
+  </header>
+
+  <div class="container">
+    <button id="test" class="recorder hide">record</button>
+    <div id="console" class="code limit"></div>
   </div>
 
-  <button id="test" class="recorder hide">record</button>
-
-  <div id="console" class="code"></div>
+  <footer>
+    <span class="monospace"><></span> with ❤ by <a href="https://github.com/catdad">catdad</a>
+  </footer>
 
   <script src="src/console.js"></script>
   <script src="src/index.js"></script>
