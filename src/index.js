@@ -152,16 +152,16 @@ window.addEventListener('load', function () {
     function onStop(ev) {
       if (once) {
         testBtn.removeEventListener('mouseup', onStop);
-        testBtn.removeEventListener('pointerup', onStop);
         testBtn.removeEventListener('touchend', onStop);
+        testBtn.removeEventListener('pointerup', onStop);
       }
 
       func(ev);
     }
 
     testBtn.addEventListener('mouseup', onStop);
-    testBtn.addEventListener('pointerup', onStop);
     testBtn.addEventListener('touchend', onStop);
+    testBtn.addEventListener('pointerup', onStop);
   }
 
   function startEventHandler(func) {
