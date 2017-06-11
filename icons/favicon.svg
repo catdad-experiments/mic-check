@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .circle {
+      fill: #abd64d;
+    }
+
+    .mic {
+      fill: #24292e;
+    }
+  </style>
+  <circle class="circle" cx="50" cy="50" r="50"></circle>
+  <!-- mic path created by Setyo Ari Wibowo from the Noun Project -->
+  <path class="mic" d="M40 51V29c0-5.5 4.5-10 10-10s10 4.5 10 10v22c0 5.5-4.5 10-10 10S40 56.5 40 51zM68 51c0-1.1-0.9-2-2-2s-2 0.9-2 2c0 7.7-6.3 14-14 14s-14-6.3-14-14c0-1.1-0.9-2-2-2s-2 0.9-2 2c0 9.2 7 16.9 16 17.9V79h-7c-1.1 0-2 0.9-2 2s0.9 2 2 2h18c1.1 0 2-0.9 2-2s-0.9-2-2-2h-7V68.9C61 67.9 68 60.2 68 51z"/>
+</svg>
