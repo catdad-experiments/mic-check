@@ -29,9 +29,10 @@ window.addEventListener('load', function () {
   }
 
   function onPermissionError(err) {
-    // TODO this probably means we had permission once
-    // but it was now revoked... we should ask for
-    // permission again
+    permissionDeniedPrompt.classList.remove('hide');
+
+    permissionDeniedPrompt.querySelector('button').onclick = window.location.reload.bind(window.location);
+
     console.error(err);
   }
 
@@ -152,16 +153,16 @@ window.addEventListener('load', function () {
     function onStop(ev) {
       if (once) {
         testBtn.removeEventListener('mouseup', onStop);
-        testBtn.removeEventListener('pointerup', onStop);
         testBtn.removeEventListener('touchend', onStop);
+        testBtn.removeEventListener('pointerup', onStop);
       }
 
       func(ev);
     }
 
     testBtn.addEventListener('mouseup', onStop);
-    testBtn.addEventListener('pointerup', onStop);
     testBtn.addEventListener('touchend', onStop);
+    testBtn.addEventListener('pointerup', onStop);
   }
 
   function startEventHandler(func) {
@@ -210,9 +211,7 @@ window.addEventListener('load', function () {
     hidePrompts();
 
     if (err) {
-      permissionDeniedPrompt.classList.remove('hide');
-
-      return;
+      return onPermissionError(err);
     }
 
     closeUserMedia(stream);

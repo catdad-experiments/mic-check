@@ -67,6 +67,18 @@ b {
   display: none;
 }
 
+header button {
+  display: block;
+  padding: 10px;
+  margin: 30px auto;
+  outline: none;
+  border: none;
+  background-color: #abd64d;
+  font-variant: small-caps;
+  font-weight: bold;
+  border-radius: 2px;
+}
+
 span.icon {
   position: relative;
   display: inline-block;
