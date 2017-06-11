@@ -12,13 +12,14 @@
 <body>
   <svg class="sprite" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <symbol id="bracket" viewBox="0 0 40 40">
-        <path d="M0,0 L40,0 L 40,10 L10,10 L10,40 L0,40" />
+      <symbol id="code" viewBox="0 0 14 16">
+        <!-- Icon from GitHub Octocons - https://github.com/primer/octicons/ -->
+        <path d="M9.5,3 L8,4.5 L11.5,8 L8,11.5 L9.5,13 L14,8 L9.5,3 L9.5,3 Z M4.5,3 L0,8 L4.5,13 L6,11.5 L2.5,8 L6,4.5 L4.5,3 L4.5,3 Z" />
       </symbol>
 
-      <symbol id="code" viewBox="0 0 80 58">
-        <use xlink:href="#bracket" transform="translate(21, -21) rotate(-45 50 50)" width="40" height="40"></use>
-        <use xlink:href="#bracket" transform="translate(-41, -21) rotate(135 50 50)" width="40" height="40"></use>
+      <symbol id="heart" viewBox="0 0 12 16">
+        <!-- Icon from GitHub Octocons - https://github.com/primer/octicons/ -->
+        <path d="M11.2 3C10.68 2.37 9.95 2.05 9 2 8.03 2 7.31 2.42 6.8 3 6.29 3.58 6.02 3.92 6 4 5.98 3.92 5.72 3.58 5.2 3 4.68 2.42 4.03 2 3 2 2.05 2.05 1.31 2.38 0.8 3 0.28 3.61 0.02 4.28 0 5 0 5.52 0.09 6.52 0.67 7.67 1.25 8.82 3.01 10.61 6 13 8.98 10.61 10.77 8.83 11.34 7.67 11.91 6.51 12 5.5 12 5 11.98 4.28 11.72 3.61 11.2 2.98L11.2 3Z"/>
       </symbol>
 
       <symbol id="mic" viewBox="0 0 100 100">
@@ -53,7 +54,11 @@
     <span class="icon">
       <svg class="icon"><use xlink:href="#code"></use></svg>
     </span>
-    <span> with ❤ by </span>
+    <span> with </span>
+    <span class="icon">
+      <svg class="icon"><use xlink:href="#heart"></use></svg>
+    </span>
+    <span> by </span>
     <a href="https://github.com/catdad">catdad</a>
   </footer>
 
