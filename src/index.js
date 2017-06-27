@@ -44,7 +44,7 @@ window.addEventListener('load', function () {
   });
 
   if (missingFeatures.length) {
-    return onMissingFeatures(missingFeatures);
+    return onMissingFeatures(missingFeatures.join(', '));
   }
 
   var context = new window.AudioContext();
