@@ -1,3 +1,5 @@
+<img src="https://catdad-experiments.github.io/mic-check/icons/favicon.svg" style="display: block; width: 200px; margin: auto" alt="logo" />
+
 # mic check
 
 Have you ever bought a new pair of headphones and said to yourself, "I wonder what the microphone on these puppies sounds like?" So you called your mom to find out, but she really wasn't much help? And then you are left wondering until that moment where you really need a good microphone for that important phone call (because you are one of the three people who still make phone calls)? And now there's a **huge** gamble as to whether you will be heard?
