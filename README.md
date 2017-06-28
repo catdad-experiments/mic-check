@@ -1,4 +1,6 @@
-<img src="https://catdad-experiments.github.io/mic-check/icons/favicon.svg" width="200px" alt="logo" />
+<p align="center">
+  <img src="https://catdad-experiments.github.io/mic-check/icons/favicon.svg" width="200px" alt="logo" />
+</p>
 
 # mic check
 
