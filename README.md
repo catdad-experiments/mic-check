@@ -1,4 +1,4 @@
-<img src="https://catdad-experiments.github.io/mic-check/icons/favicon.svg" style="display: block; width: 200px; margin: auto" alt="logo" />
+![logo](https://catdad-experiments.github.io/mic-check/icons/favicon.svg){:width="200px"}
 
 # mic check
 
