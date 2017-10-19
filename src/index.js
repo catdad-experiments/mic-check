@@ -7,6 +7,7 @@ window.addEventListener('load', function () {
   var permissionDeniedPrompt = document.querySelector('#permission-denied-prompt');
   var unsupportedPrompt = document.querySelector('#unsupported-prompt');
   var usagePrompt = document.querySelector('#usage-prompt');
+  var progressBar = document.querySelector('#progress');
 
   function hidePrompts() {
     permissionPrompt.classList.add('hide');
@@ -82,6 +83,8 @@ window.addEventListener('load', function () {
       var globalRecorder;
 
       function playback(chunks) {
+        progressBar.style.width = '0px';
+
         chunksToArrayBuffer(chunks, function (err, buffer) {
           if (err) {
             console.error(err);
@@ -96,6 +99,22 @@ window.addEventListener('load', function () {
             source.buffer = audioBuffer;
             source.connect(context.destination);
             source.start(0);
+
+            // Note the start time and duration of the audio
+            var startTime = context.currentTime;
+            var duration = audioBuffer.duration;
+
+            // TODO: use requestAnimationFrame instead of an interval
+            var i = setInterval(function() {
+              var position = context.currentTime - startTime;
+              var percent = Math.min(position / duration * 100, 100);
+
+              progressBar.style.width = percent + '%';
+
+              if (position >= duration) {
+                clearInterval(i);
+              }
+            }, 16);
           });
         });
       }
