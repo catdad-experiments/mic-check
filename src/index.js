@@ -7,7 +7,6 @@ window.addEventListener('load', function () {
   var permissionDeniedPrompt = document.querySelector('#permission-denied-prompt');
   var unsupportedPrompt = document.querySelector('#unsupported-prompt');
   var usagePrompt = document.querySelector('#usage-prompt');
-  var progressBar = document.querySelector('#progress');
 
   function hidePrompts() {
     permissionPrompt.classList.add('hide');
@@ -83,8 +82,6 @@ window.addEventListener('load', function () {
       var globalRecorder;
 
       function playback(chunks) {
-        progressBar.style.width = '0px';
-
         chunksToArrayBuffer(chunks, function (err, buffer) {
           if (err) {
             console.error(err);
@@ -108,10 +105,12 @@ window.addEventListener('load', function () {
             var i = setInterval(function() {
               var position = context.currentTime - startTime;
               var percent = Math.min(position / duration * 100, 100);
+              percent = 100 - percent;
 
-              progressBar.style.width = percent + '%';
+              testBtn.style.clipPath = 'polygon(0 ' + percent + '%, 100% ' + percent + '%, 100% 100%, 0% 100%)';
 
               if (position >= duration) {
+                testBtn.style.clipPath = '';
                 clearInterval(i);
               }
             }, 16);

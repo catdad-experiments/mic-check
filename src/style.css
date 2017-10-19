@@ -117,6 +117,8 @@ svg.icon {
   max-width: 250px;
   max-height: 250px;
   border-radius: 300px;
+
+  will-change: opacity, clip-path, background-color;
 }
 
 .recorder svg {
@@ -127,18 +129,4 @@ svg.icon {
 
 .recorder.active {
   background-color: #d64c4f;
-}
-
-.progress-wrapper {
-  position: relative;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 600px;
-  height: 10px;
-}
-
-.progress {
-  width: 100%;
-  height: 100%;
-  background-color: #abd64d;
 }
