@@ -96,6 +96,24 @@ window.addEventListener('load', function () {
             source.buffer = audioBuffer;
             source.connect(context.destination);
             source.start(0);
+
+            // Note the start time and duration of the audio
+            var startTime = context.currentTime;
+            var duration = audioBuffer.duration;
+
+            // TODO: use requestAnimationFrame instead of an interval
+            var i = setInterval(function() {
+              var position = context.currentTime - startTime;
+              var percent = Math.min(position / duration * 100, 100);
+              percent = 100 - percent;
+
+              testBtn.style.clipPath = 'polygon(0 ' + percent + '%, 100% ' + percent + '%, 100% 100%, 0% 100%)';
+
+              if (position >= duration) {
+                testBtn.style.clipPath = '';
+                clearInterval(i);
+              }
+            }, 16);
           });
         });
       }
