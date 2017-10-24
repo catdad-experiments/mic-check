@@ -117,6 +117,8 @@ svg.icon {
   max-width: 250px;
   max-height: 250px;
   border-radius: 300px;
+
+  will-change: opacity, clip-path, background-color;
 }
 
 .recorder svg {
