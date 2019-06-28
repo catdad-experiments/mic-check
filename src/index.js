@@ -58,7 +58,7 @@ window.addEventListener('load', function () {
   }
 
   function getMedia() {
-    var deviceId = deviceSelect.value;
+    var deviceId = deviceSelect.value || 'default';
 
     // TODO fall back to navigator.getUserMedia is necessary
     // use something like this: https://github.com/webrtc/adapter
@@ -71,7 +71,7 @@ window.addEventListener('load', function () {
   }
 
   function discoverDevices() {
-    return  navigator.mediaDevices.enumerateDevices().then(function (devices) {
+    return navigator.mediaDevices.enumerateDevices().then(function (devices) {
       return devices.filter(function (device) {
         return device.kind === 'audioinput';
       });
@@ -246,10 +246,10 @@ window.addEventListener('load', function () {
   // the app in the correct state
   getMedia().then(function (stream) {
     hidePrompts();
-
     closeUserMedia(stream);
-    discoverDevices();
-
+  }).then(function () {
+    return discoverDevices();
+  }).then(function () {
     usagePrompt.classList.remove('hide');
     testBtn.classList.remove('hide');
   }).catch(function (err) {
