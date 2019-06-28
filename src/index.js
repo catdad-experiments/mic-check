@@ -7,6 +7,7 @@ window.addEventListener('load', function () {
   var permissionDeniedPrompt = document.querySelector('#permission-denied-prompt');
   var unsupportedPrompt = document.querySelector('#unsupported-prompt');
   var usagePrompt = document.querySelector('#usage-prompt');
+  var deviceSelect = document.querySelector('#devices');
 
   function hidePrompts() {
     permissionPrompt.classList.add('hide');
@@ -56,14 +57,34 @@ window.addEventListener('load', function () {
     });
   }
 
-  function getMedia(done) {
+  function getMedia() {
+    var deviceId = deviceSelect.value || 'default';
+
     // TODO fall back to navigator.getUserMedia is necessary
     // use something like this: https://github.com/webrtc/adapter
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      .then(function (stream) {
-        done(null, stream);
-      })
-      .catch(done);
+    return navigator.mediaDevices.getUserMedia({
+      audio: {
+        deviceId: deviceId
+      },
+      video: false
+    });
+  }
+
+  function discoverDevices() {
+    return navigator.mediaDevices.enumerateDevices().then(function (devices) {
+      return devices.filter(function (device) {
+        return device.kind === 'audioinput';
+      });
+    }).then(function (microphones) {
+      console.log(microphones);
+
+      microphones.forEach(function (mic) {
+        var opt = document.createElement('option');
+        opt.appendChild(document.createTextNode(mic.label));
+        opt.value = mic.deviceId;
+        deviceSelect.appendChild(opt);
+      });
+    });
   }
 
   var recordAndPlay = (function () {
@@ -151,12 +172,10 @@ window.addEventListener('load', function () {
         return recorder;
       }
 
-      getMedia(function (err, stream) {
-        if (err) {
-          return onPermissionError(err);
-        }
-
+      getMedia().then(function (stream) {
         globalRecorder = record(stream);
+      }).catch(function (err) {
+        onPermissionError(err);
       });
 
       return {
@@ -225,16 +244,17 @@ window.addEventListener('load', function () {
 
   // prompt the user for media immediately, then initialize
   // the app in the correct state
-  getMedia(function (err, stream) {
+  getMedia().then(function (stream) {
     hidePrompts();
-
-    if (err) {
-      return onPermissionError(err);
-    }
-
     closeUserMedia(stream);
-
+  }).then(function () {
+    return discoverDevices();
+  }).then(function () {
     usagePrompt.classList.remove('hide');
     testBtn.classList.remove('hide');
+    deviceSelect.classList.remove('hide');
+  }).catch(function (err) {
+    hidePrompts();
+    onPermissionError(err);
   });
 });
