@@ -126,6 +126,16 @@ svg.icon {
   line-height: 2;
   max-width: 100%;
   margin: 2rem 0;
+  background: #24292e;
+  color: #e5e5e5;
+  font-weight: bold;
+  padding: 6px;
+  border: 1px solid #abd64d;
+  border-radius: 1rem;
+}
+
+.dropdown option {
+  width: 100%;
 }
 
 .recorder.active {
