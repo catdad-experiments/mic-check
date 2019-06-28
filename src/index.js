@@ -7,6 +7,7 @@ window.addEventListener('load', function () {
   var permissionDeniedPrompt = document.querySelector('#permission-denied-prompt');
   var unsupportedPrompt = document.querySelector('#unsupported-prompt');
   var usagePrompt = document.querySelector('#usage-prompt');
+  var deviceSelect = document.querySelector('#devices');
 
   function hidePrompts() {
     permissionPrompt.classList.add('hide');
@@ -57,13 +58,37 @@ window.addEventListener('load', function () {
   }
 
   function getMedia(done) {
+    var deviceId = deviceSelect.value;
+
     // TODO fall back to navigator.getUserMedia is necessary
     // use something like this: https://github.com/webrtc/adapter
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    navigator.mediaDevices.getUserMedia({
+      audio: {
+        deviceId: deviceId
+      },
+      video: false
+    })
       .then(function (stream) {
         done(null, stream);
       })
       .catch(done);
+  }
+
+  function discoverDevices() {
+    return  navigator.mediaDevices.enumerateDevices().then(function (devices) {
+      return devices.filter(function (device) {
+        return device.kind === 'audioinput';
+      });
+    }).then(function (microphones) {
+      console.log(microphones);
+
+      microphones.forEach(function (mic) {
+        var opt = document.createElement('option');
+        opt.appendChild(document.createTextNode(mic.label));
+        opt.value = mic.deviceId;
+        deviceSelect.appendChild(opt);
+      });
+    });
   }
 
   var recordAndPlay = (function () {
@@ -233,6 +258,7 @@ window.addEventListener('load', function () {
     }
 
     closeUserMedia(stream);
+    discoverDevices();
 
     usagePrompt.classList.remove('hide');
     testBtn.classList.remove('hide');
