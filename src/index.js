@@ -57,21 +57,17 @@ window.addEventListener('load', function () {
     });
   }
 
-  function getMedia(done) {
+  function getMedia() {
     var deviceId = deviceSelect.value;
 
     // TODO fall back to navigator.getUserMedia is necessary
     // use something like this: https://github.com/webrtc/adapter
-    navigator.mediaDevices.getUserMedia({
+    return navigator.mediaDevices.getUserMedia({
       audio: {
         deviceId: deviceId
       },
       video: false
-    })
-      .then(function (stream) {
-        done(null, stream);
-      })
-      .catch(done);
+    });
   }
 
   function discoverDevices() {
@@ -176,12 +172,10 @@ window.addEventListener('load', function () {
         return recorder;
       }
 
-      getMedia(function (err, stream) {
-        if (err) {
-          return onPermissionError(err);
-        }
-
+      getMedia().then(function (stream) {
         globalRecorder = record(stream);
+      }).catch(function (err) {
+        onPermissionError(err);
       });
 
       return {
@@ -250,17 +244,16 @@ window.addEventListener('load', function () {
 
   // prompt the user for media immediately, then initialize
   // the app in the correct state
-  getMedia(function (err, stream) {
+  getMedia().then(function (stream) {
     hidePrompts();
-
-    if (err) {
-      return onPermissionError(err);
-    }
 
     closeUserMedia(stream);
     discoverDevices();
 
     usagePrompt.classList.remove('hide');
     testBtn.classList.remove('hide');
+  }).catch(function (err) {
+    hidePrompts();
+    onPermissionError(err);
   });
 });
