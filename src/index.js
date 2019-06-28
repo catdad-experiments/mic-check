@@ -252,6 +252,7 @@ window.addEventListener('load', function () {
   }).then(function () {
     usagePrompt.classList.remove('hide');
     testBtn.classList.remove('hide');
+    deviceSelect.classList.remove('hide');
   }).catch(function (err) {
     hidePrompts();
     onPermissionError(err);
